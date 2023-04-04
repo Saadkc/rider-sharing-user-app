@@ -16,8 +16,6 @@ class MySplashScreen extends StatefulWidget
   State<MySplashScreen> createState() => _MySplashScreenState();
 }
 
-
-
 class _MySplashScreenState extends State<MySplashScreen> {
 
   startTimer()

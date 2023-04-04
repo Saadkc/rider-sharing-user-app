@@ -1,27 +1,34 @@
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:user_fyp/info%20handler/app_info.dart';
+import 'package:user_fyp/main%20screens/main_screen.dart';
 import 'package:user_fyp/splashScreen/splash_screen.dart';
-import 'package:user_fyp/test.dart';
 
-import 'BBC LONDON/map_sscreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  runApp(MyApp(
-      child: MaterialApp(
-    title: 'Users App',
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
-    ),
-    home: MySplashScreen(),
-
-    //home: TrackingButton(),
-
-    debugShowCheckedModeBanner: false,
-  )));
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => AppInfo()),
+        Provider(create: (context) => MainScreen()),
+    ],
+    child: MyApp(
+        child: MaterialApp(
+      title: 'Users App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const MySplashScreen(),
+  
+      //home: TrackingButton(),
+  
+      debugShowCheckedModeBanner: false,
+    )),
+  ));
 }
 
 class MyApp extends StatefulWidget {

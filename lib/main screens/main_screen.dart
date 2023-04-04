@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_geofire/flutter_geofire.dart';
@@ -32,6 +33,7 @@ class _MainScreenState extends State<MainScreen> {
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
   GoogleMapController? newGoogleMapController;
   late CameraPosition _initialPosition;
+  final ref = FirebaseDatabase.instance.ref('drivers');
 
   // static const CameraPosition _kGooglePlex = CameraPosition(
   //   target: LatLng(37.42796133580664, -122.085749655962),
@@ -63,19 +65,7 @@ class _MainScreenState extends State<MainScreen> {
 
   List<ActiveNearbyAvailableDrivers> onlineNearByAvailableDriversList = [];
 
-  Set<Marker> markers = Set(); //markers for google map
-  var mymarkers = [];
-  LatLng loc1 = LatLng(27.6602292, 85.308027);
-  LatLng loc2 = LatLng(24.968399, 67.276137);
-  addMarkers() async {
-    mymarkers.add({
-      "id": "loc1",
-      "marker": Marker(
-          markerId: MarkerId(loc1.toString()),
-          position: loc1,
-          icon: BitmapDescriptor.defaultMarker)
-    });
-  }
+  
 
   blackThemeGoogleMap() {
     newGoogleMapController!.setMapStyle('''
@@ -262,6 +252,8 @@ class _MainScreenState extends State<MainScreen> {
     CameraPosition cameraPosition =
         CameraPosition(target: latLngPosition, zoom: 14);
 
+     _initialPosition = cameraPosition;
+
     newGoogleMapController!
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
@@ -273,26 +265,20 @@ class _MainScreenState extends State<MainScreen> {
     userName = userModelCurrentInfo!.name!;
     userEmail = userModelCurrentInfo!.email!;
 
-    initializeGeoFireListener();
+    // initializeGeoFireListener();
   }
 
   @override
   void initState() {
     super.initState();
-    _initialPosition = CameraPosition(
-      target: loc1,
-      // LatLng(widget.startPosition!.geometry!.location!.lat!,
-      //     widget.startPosition!.geometry!.location!.lng!),
-      zoom: 14.4746,
-    );
-
     checkIfLocationPermissionAllowed();
+    locateUserPosition();
+
     //saveRideRequestInformation();
     //createActiveNearByDriverIconMarker();
   }
 
   saveRideRequestInformation() {
-    //1. save the RideRequest Information
 
     onlineNearByAvailableDriversList =
         GeoFireAssistant.activeNearbyAvailableDriversList;
@@ -345,18 +331,18 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     // createActiveNearByDriverIconMarker();
-    Set<Marker> _markers = {
-      Marker(markerId: const MarkerId('start'), position: loc1
-          //  LatLng(widget.startPosition!.geometry!.location!.lat!,
-          //     widget.startPosition!.geometry!.location!.lng!)
+    // Set<Marker> _markers = {
+    //   Marker(markerId: const MarkerId('start'), position: loc1
+    //       //  LatLng(widget.startPosition!.geometry!.location!.lat!,
+    //       //     widget.startPosition!.geometry!.location!.lng!)
 
-          ),
-      Marker(markerId: const MarkerId('end'), position: loc2
+    //       ),
+    //   Marker(markerId: const MarkerId('end'), position: loc2
 
-          // LatLng(widget.endPosition!.geometry!.location!.lat!,
-          //     widget.endPosition!.geometry!.location!.lng!)
-          )
-    };
+    //       // LatLng(widget.endPosition!.geometry!.location!.lat!,
+    //       //     widget.endPosition!.geometry!.location!.lng!)
+    //       )
+    // };
 
     return Scaffold(
       key: sKey,
@@ -374,44 +360,63 @@ class _MainScreenState extends State<MainScreen> {
       ),
       body: Stack(
         children: [
-          GoogleMap(
-            padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
-            mapType: MapType.normal,
-            myLocationEnabled: true,
-            zoomGesturesEnabled: true,
-            zoomControlsEnabled: true,
-            initialCameraPosition: _initialPosition,
-            polylines: polyLineSet,
-            // markers: markers,
-            markers: Set.from(_markers),
-            circles: circlesSet,
-            onMapCreated: (GoogleMapController controller) {
-              Future.delayed(const Duration(milliseconds: 200), () {
-                controller.animateCamera(CameraUpdate.newLatLngBounds(
-                    MapUtils.boundsFromLatLngList(
-                        _markers.map((loc) => loc.position).toList()),
-                    1));
-                // _getPolyline();
-              });
-            },
-            // onMapCreated: (GoogleMapController controller) {
-            //   _controllerGoogleMap.complete(controller);
-            //   newGoogleMapController = controller;
+          StreamBuilder<dynamic>(
+              stream: FirebaseDatabase.instance.ref().child('drivers').onValue,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                Map data = snapshot.data.snapshot.value;
 
-            //   //for black theme google map
-            //   blackThemeGoogleMap();
+                List<ActiveNearbyAvailableDrivers> drivers = [];
 
-            //   setState(() {
-            //     bottomPaddingOfMap = 240;
-            //   });
+                data.forEach((key, value) {
+                  drivers.add(
+                    ActiveNearbyAvailableDrivers(
+                      driverId: key.toString(),
+                      locationLatitude: value['latitude'],
+                      locationLongitude: value['longitude'],
+                    ),
+                  );
+                });
 
-            //   locateUserPosition();
-            //   // initializeGeoFireListener();
-            //   // displayActiveDriversOnUsersMap();
-            //   // createActiveNearByDriverIconMarker();
-            //   //saveRideRequestInformation();
-            // },
-          ),
+                return GoogleMap(
+                  padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
+
+                  mapType: MapType.normal,
+                  myLocationEnabled: true,
+                  zoomGesturesEnabled: true,
+                  zoomControlsEnabled: true,
+                  initialCameraPosition: _initialPosition,
+                  polylines: polyLineSet,
+                  // markers: markers,
+                  markers: Set.from(markersSet),
+                  circles: circlesSet,
+                  onMapCreated: (GoogleMapController controller) {
+                    _controllerGoogleMap.complete(controller);
+                    newGoogleMapController = controller;
+                    Future.delayed(const Duration(milliseconds: 200), () {
+                      controller.animateCamera(CameraUpdate.newLatLngBounds(
+                          MapUtils.boundsFromLatLngList(
+                              markersSet.map((loc) => loc.position).toList()),
+                          1));
+                      // _getPolyline();
+                    });
+                    blackThemeGoogleMap();
+
+                    setState(() {
+                      bottomPaddingOfMap = 240;
+                    });
+
+                    locateUserPosition();
+                    // initializeGeoFireListener();
+                    displayActiveDriversOnUsersMap(drivers);
+                    createActiveNearByDriverIconMarker();
+                    saveRideRequestInformation();
+                  },
+                 
+                );
+              }),
 
           //custom hamburger button for drawer
           Positioned(
@@ -535,10 +540,14 @@ class _MainScreenState extends State<MainScreen> {
                                       color: Colors.grey, fontSize: 12),
                                 ),
                                 Text(
-                                  "where to go",
-                                  // Provider.of<AppInfo>(context).userDropOffLocation != null
-                                  //     ? Provider.of<AppInfo>(context).userDropOffLocation!.locationName!
-                                  //     : "Where to go?",
+                                  // "where to go",
+                                  Provider.of<AppInfo>(context)
+                                              .userDropOffLocation !=
+                                          null
+                                      ? Provider.of<AppInfo>(context)
+                                          .userDropOffLocation!
+                                          .locationName!
+                                      : "Where to go?",
                                   style: const TextStyle(
                                       color: Colors.grey, fontSize: 14),
                                 ),
@@ -559,13 +568,13 @@ class _MainScreenState extends State<MainScreen> {
                       const SizedBox(height: 16.0),
 
                       ElevatedButton(
-                        child: const Text(
+                        child: Text(
                           "Request a Ride",
                         ),
                         onPressed: () {
-                          saveRideRequestInformation();
+                          // saveRideRequestInformation();
                           Navigator.push(
-                              context,
+                              context, //SelectNearestActiveDriversScreen
                               MaterialPageRoute(
                                   builder: (c) => TrackingButton()));
                           // if(Provider.of<AppInfo>(context, listen: false).userDropOffLocation != null)
@@ -622,7 +631,7 @@ class _MainScreenState extends State<MainScreen> {
 
     PolylinePoints pPoints = PolylinePoints();
     List<PointLatLng> decodedPolyLinePointsResultList =
-        pPoints.decodePolyline(directionDetailsInfo!.e_points!);
+        pPoints.decodePolyline(directionDetailsInfo.e_points!);
 
     pLineCoOrdinatesList.clear();
 
@@ -717,71 +726,88 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  initializeGeoFireListener() {
-    Geofire.initialize("activeDrivers");
+  // initializeGeoFireListener() {
+  //   Geofire.initialize("activeDrivers");
+  //   print("user");
+  //   print(userCurrentPosition);
 
-    Geofire.queryAtLocation(
-            userCurrentPosition!.latitude, userCurrentPosition!.longitude, 10)!
-        .listen((map) {
-      print(map);
-      if (map != null) {
-        var callBack = map['callBack'];
+  //   Geofire.queryAtLocation(
+  //           userCurrentPosition!.latitude, userCurrentPosition!.longitude, 10)!
+  //       .listen((map) {
+  //     print(map);
+  //     if (map != null) {
+  //       var callBack = map['callBack'];
 
-        //latitude will be retrieved from map['latitude']
-        //longitude will be retrieved from map['longitude']
+  //       //latitude will be retrieved from map['latitude']
+  //       //longitude will be retrieved from map['longitude']
 
-        switch (callBack) {
-          //whenever any driver become active/online
-          case Geofire.onKeyEntered:
-            ActiveNearbyAvailableDrivers activeNearbyAvailableDriver =
-                ActiveNearbyAvailableDrivers();
-            activeNearbyAvailableDriver.locationLatitude = map['latitude'];
-            activeNearbyAvailableDriver.locationLongitude = map['longitude'];
-            activeNearbyAvailableDriver.driverId = map['key'];
-            GeoFireAssistant.activeNearbyAvailableDriversList
-                .add(activeNearbyAvailableDriver);
-            if (activeNearbyDriverKeysLoaded == true) {
-              displayActiveDriversOnUsersMap();
-            }
-            break;
+  //       switch (callBack) {
+  //         //whenever any driver become active/online
+  //         case Geofire.onKeyEntered:
+  //           ActiveNearbyAvailableDrivers activeNearbyAvailableDriver =
+  //               ActiveNearbyAvailableDrivers();
+  //           activeNearbyAvailableDriver.locationLatitude = map['latitude'];
+  //           activeNearbyAvailableDriver.locationLongitude = map['longitude'];
+  //           activeNearbyAvailableDriver.driverId = map['key'];
+  //           GeoFireAssistant.activeNearbyAvailableDriversList
+  //               .add(activeNearbyAvailableDriver);
+  //           if (activeNearbyDriverKeysLoaded == true) {
+  //             displayActiveDriversOnUsersMap([]);
+  //           }
+  //           break;
 
-          //whenever any driver become non-active/offline
-          case Geofire.onKeyExited:
-            GeoFireAssistant.deleteOfflineDriverFromList(map['key']);
-            displayActiveDriversOnUsersMap();
-            break;
+  //         //whenever any driver become non-active/offline
+  //         case Geofire.onKeyExited:
+  //           GeoFireAssistant.deleteOfflineDriverFromList(map['key']);
+  //           displayActiveDriversOnUsersMap([]);
+  //           break;
 
-          //whenever driver moves - update driver location
-          case Geofire.onKeyMoved:
-            ActiveNearbyAvailableDrivers activeNearbyAvailableDriver =
-                ActiveNearbyAvailableDrivers();
-            activeNearbyAvailableDriver.locationLatitude = map['latitude'];
-            activeNearbyAvailableDriver.locationLongitude = map['longitude'];
-            activeNearbyAvailableDriver.driverId = map['key'];
-            GeoFireAssistant.updateActiveNearbyAvailableDriverLocation(
-                activeNearbyAvailableDriver);
-            displayActiveDriversOnUsersMap();
-            break;
+  //         //whenever driver moves - update driver location
+  //         case Geofire.onKeyMoved:
+  //           ActiveNearbyAvailableDrivers activeNearbyAvailableDriver =
+  //               ActiveNearbyAvailableDrivers();
+  //           activeNearbyAvailableDriver.locationLatitude = map['latitude'];
+  //           activeNearbyAvailableDriver.locationLongitude = map['longitude'];
+  //           activeNearbyAvailableDriver.driverId = map['key'];
+  //           GeoFireAssistant.updateActiveNearbyAvailableDriverLocation(
+  //               activeNearbyAvailableDriver);
+  //           displayActiveDriversOnUsersMap([]);
+  //           break;
 
-          //display those online/active drivers on user's map
-          case Geofire.onGeoQueryReady:
-            activeNearbyDriverKeysLoaded = true;
-            displayActiveDriversOnUsersMap();
-            break;
-        }
+  //         //display those online/active drivers on user's map
+  //         case Geofire.onGeoQueryReady:
+  //           activeNearbyDriverKeysLoaded = true;
+
+  //           displayActiveDriversOnUsersMap([]);
+  //           break;
+  //       }
+  //     }
+
+  //     setState(() {});
+  //   });
+  // }
+
+  displayActiveDriversOnUsersMap(List<ActiveNearbyAvailableDrivers> drivers) {
+    markersSet.clear();
+    circlesSet.clear();
+
+    Set<Marker> driversMarkerSet = Set<Marker>();
+
+    if (drivers.isNotEmpty) {
+      for (var element in drivers) {
+        LatLng eachDriverActivePosition =
+            LatLng(element.locationLatitude!, element.locationLongitude!);
+
+        Marker marker = Marker(
+          markerId: MarkerId("driver${element.driverId!}"),
+          position: eachDriverActivePosition,
+          // icon: activeNearbyIcon!,
+          rotation: 360,
+        );
+
+        driversMarkerSet.add(marker);
       }
-
-      setState(() {});
-    });
-  }
-
-  displayActiveDriversOnUsersMap() {
-    setState(() {
-      markersSet.clear();
-      circlesSet.clear();
-
-      Set<Marker> driversMarkerSet = Set<Marker>();
-
+    } else {
       for (ActiveNearbyAvailableDrivers eachDriver
           in GeoFireAssistant.activeNearbyAvailableDriversList) {
         LatLng eachDriverActivePosition =
@@ -790,17 +816,19 @@ class _MainScreenState extends State<MainScreen> {
         Marker marker = Marker(
           markerId: MarkerId("driver" + eachDriver.driverId!),
           position: eachDriverActivePosition,
-          icon: activeNearbyIcon!,
+          // icon: activeNearbyIcon!,
           rotation: 360,
         );
 
         driversMarkerSet.add(marker);
       }
+    }
 
-      setState(() {
-        markersSet = driversMarkerSet;
-      });
+    markersSet = driversMarkerSet;
+
+    setState(() {
     });
+    // });
   }
 
   createActiveNearByDriverIconMarker() {

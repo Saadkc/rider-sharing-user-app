@@ -6,16 +6,17 @@ import '../assistants/request_assistant.dart';
 import '../global/map_key.dart';
 import '../info handler/app_info.dart';
 import '../info handler/directions.dart';
+import '../mixin/location_mixin.dart';
 import '../models/predicted_places.dart';
 
 
 
-class PlacePredictionTileDesign extends StatelessWidget
-{
+class PlacePredictionTileDesign extends StatelessWidget with Location {
   final PredictedPlaces? predictedPlaces;
 
   PlacePredictionTileDesign({this.predictedPlaces});
 
+  
 
   getPlaceDirectionDetails(String? placeId, context) async
   {
@@ -31,6 +32,8 @@ class PlacePredictionTileDesign extends StatelessWidget
     var responseApi = await RequestAssistant.receiveRequest(placeDirectionDetailsUrl);
 
     Navigator.pop(context);
+
+    // PlacePredictionTileDesign.setToLocation();
 
     if(responseApi == "Error Occurred, Failed. No Response.")
     {
@@ -57,6 +60,7 @@ class PlacePredictionTileDesign extends StatelessWidget
     return ElevatedButton(
       onPressed: ()
       {
+        
         getPlaceDirectionDetails(predictedPlaces!.place_id, context);
       },
       style: ElevatedButton.styleFrom(
