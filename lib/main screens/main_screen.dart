@@ -32,7 +32,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
   GoogleMapController? newGoogleMapController;
-  late CameraPosition _initialPosition;
+  CameraPosition? _initialPosition;
   final ref = FirebaseDatabase.instance.ref('drivers');
 
   // static const CameraPosition _kGooglePlex = CameraPosition(
@@ -64,8 +64,6 @@ class _MainScreenState extends State<MainScreen> {
   BitmapDescriptor? activeNearbyIcon;
 
   List<ActiveNearbyAvailableDrivers> onlineNearByAvailableDriversList = [];
-
-  
 
   blackThemeGoogleMap() {
     newGoogleMapController!.setMapStyle('''
@@ -252,19 +250,25 @@ class _MainScreenState extends State<MainScreen> {
     CameraPosition cameraPosition =
         CameraPosition(target: latLngPosition, zoom: 14);
 
-     _initialPosition = cameraPosition;
+        
 
-    newGoogleMapController!
-        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    // newGoogleMapController!
+    //     .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
     String humanReadableAddress =
         await AssistantMethods.searchAddressForGeographicCoOrdinates(
             userCurrentPosition!, context);
     print("this is your address = " + humanReadableAddress);
 
-    userName = userModelCurrentInfo!.name!;
-    userEmail = userModelCurrentInfo!.email!;
+    if(userModelCurrentInfo != null ){
+      userName = userModelCurrentInfo!.name!;
+      userEmail = userModelCurrentInfo!.email!;
+    }
 
+    setState(() {
+      _initialPosition = cameraPosition;
+      
+    });
     // initializeGeoFireListener();
   }
 
@@ -279,7 +283,6 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   saveRideRequestInformation() {
-
     onlineNearByAvailableDriversList =
         GeoFireAssistant.activeNearbyAvailableDriversList;
     searchNearestOnlineDrivers();
@@ -380,42 +383,47 @@ class _MainScreenState extends State<MainScreen> {
                   );
                 });
 
-                return GoogleMap(
-                  padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
+                return _initialPosition == null
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : GoogleMap(
+                        padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
 
-                  mapType: MapType.normal,
-                  myLocationEnabled: true,
-                  zoomGesturesEnabled: true,
-                  zoomControlsEnabled: true,
-                  initialCameraPosition: _initialPosition,
-                  polylines: polyLineSet,
-                  // markers: markers,
-                  markers: Set.from(markersSet),
-                  circles: circlesSet,
-                  onMapCreated: (GoogleMapController controller) {
-                    _controllerGoogleMap.complete(controller);
-                    newGoogleMapController = controller;
-                    Future.delayed(const Duration(milliseconds: 200), () {
-                      controller.animateCamera(CameraUpdate.newLatLngBounds(
-                          MapUtils.boundsFromLatLngList(
-                              markersSet.map((loc) => loc.position).toList()),
-                          1));
-                      // _getPolyline();
-                    });
-                    blackThemeGoogleMap();
+                        mapType: MapType.normal,
+                        myLocationEnabled: true,
+                        zoomGesturesEnabled: true,
+                        zoomControlsEnabled: true,
+                        initialCameraPosition: _initialPosition!,
+                        polylines: polyLineSet,
+                        // markers: markers,
+                        markers: Set.from(markersSet),
+                        circles: circlesSet,
+                        onMapCreated: (GoogleMapController controller) {
+                          _controllerGoogleMap.complete(controller);
+                          newGoogleMapController = controller;
+                          Future.delayed(const Duration(milliseconds: 200), () {
+                            controller.animateCamera(
+                                CameraUpdate.newLatLngBounds(
+                                    MapUtils.boundsFromLatLngList(markersSet
+                                        .map((loc) => loc.position)
+                                        .toList()),
+                                    1));
+                            // _getPolyline();
+                          });
+                          blackThemeGoogleMap();
 
-                    setState(() {
-                      bottomPaddingOfMap = 240;
-                    });
+                          setState(() {
+                            bottomPaddingOfMap = 240;
+                          });
 
-                    locateUserPosition();
-                    // initializeGeoFireListener();
-                    displayActiveDriversOnUsersMap(drivers);
-                    createActiveNearByDriverIconMarker();
-                    saveRideRequestInformation();
-                  },
-                 
-                );
+                          // locateUserPosition();
+                          // initializeGeoFireListener();
+                          displayActiveDriversOnUsersMap(drivers);
+                          // createActiveNearByDriverIconMarker();
+                          // saveRideRequestInformation();
+                        },
+                      );
               }),
 
           //custom hamburger button for drawer
@@ -826,8 +834,7 @@ class _MainScreenState extends State<MainScreen> {
 
     markersSet = driversMarkerSet;
 
-    setState(() {
-    });
+    setState(() {});
     // });
   }
 
