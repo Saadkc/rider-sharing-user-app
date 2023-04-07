@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ class _MainScreenState extends State<MainScreen> {
   CameraPosition? _initialPosition;
   final ref = FirebaseDatabase.instance.ref('drivers');
 
+  final user = FirebaseAuth.instance.currentUser;
   // static const CameraPosition _kGooglePlex = CameraPosition(
   //   target: LatLng(37.42796133580664, -122.085749655962),
   //   zoom: 14.4746,
@@ -250,8 +252,6 @@ class _MainScreenState extends State<MainScreen> {
     CameraPosition cameraPosition =
         CameraPosition(target: latLngPosition, zoom: 14);
 
-        
-
     // newGoogleMapController!
     //     .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
@@ -260,14 +260,13 @@ class _MainScreenState extends State<MainScreen> {
             userCurrentPosition!, context);
     print("this is your address = " + humanReadableAddress);
 
-    if(userModelCurrentInfo != null ){
+    if (userModelCurrentInfo != null) {
       userName = userModelCurrentInfo!.name!;
       userEmail = userModelCurrentInfo!.email!;
     }
 
     setState(() {
       _initialPosition = cameraPosition;
-      
     });
     // initializeGeoFireListener();
   }
@@ -331,8 +330,11 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  Map data = {};
+
   @override
   Widget build(BuildContext context) {
+    final userLocationInfo = Provider.of<AppInfo>(context);
     // createActiveNearByDriverIconMarker();
     // Set<Marker> _markers = {
     //   Marker(markerId: const MarkerId('start'), position: loc1
@@ -369,7 +371,7 @@ class _MainScreenState extends State<MainScreen> {
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                Map data = snapshot.data.snapshot.value;
+                data = snapshot.data.snapshot.value;
 
                 List<ActiveNearbyAvailableDrivers> drivers = [];
 
@@ -576,15 +578,36 @@ class _MainScreenState extends State<MainScreen> {
                       const SizedBox(height: 16.0),
 
                       ElevatedButton(
-                        child: Text(
-                          "Request a Ride",
-                        ),
-                        onPressed: () {
+                        onPressed: () async {
+                          if (Provider.of<AppInfo>(context, listen: false)
+                                  .userDropOffLocation !=
+                              null) {
+                            DatabaseReference ref = FirebaseDatabase.instance
+                                .ref("requestRides")
+                                .push();
+
+                            await ref.set({
+                              "toLatitude": userLocationInfo
+                                  .userDropOffLocation!.locationLatitude,
+                              "toLongitute": userLocationInfo
+                                  .userDropOffLocation!.locationLongitude,
+                              "fromLatitude": userCurrentPosition!.latitude,
+                              "fromLongitute": userCurrentPosition!.longitude,
+                              "status": "pending",
+                              "user_id": 1,
+                            });
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: "Please select destination location");
+                          }
+
+                          // if()
+
                           // saveRideRequestInformation();
-                          Navigator.push(
-                              context, //SelectNearestActiveDriversScreen
-                              MaterialPageRoute(
-                                  builder: (c) => TrackingButton()));
+                          // Navigator.push(
+                          //     context, //SelectNearestActiveDriversScreen
+                          //     MaterialPageRoute(
+                          //         builder: (c) => TrackingButton()));
                           // if(Provider.of<AppInfo>(context, listen: false).userDropOffLocation != null)
                           // {
                           //   saveRideRequestInformation();
@@ -598,6 +621,9 @@ class _MainScreenState extends State<MainScreen> {
                             primary: Colors.green,
                             textStyle: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold)),
+                        child: const Text(
+                          "Request a Ride",
+                        ),
                       ),
                     ],
                   ),
