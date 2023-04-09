@@ -335,19 +335,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final userLocationInfo = Provider.of<AppInfo>(context);
-    // createActiveNearByDriverIconMarker();
-    // Set<Marker> _markers = {
-    //   Marker(markerId: const MarkerId('start'), position: loc1
-    //       //  LatLng(widget.startPosition!.geometry!.location!.lat!,
-    //       //     widget.startPosition!.geometry!.location!.lng!)
-
-    //       ),
-    //   Marker(markerId: const MarkerId('end'), position: loc2
-
-    //       // LatLng(widget.endPosition!.geometry!.location!.lat!,
-    //       //     widget.endPosition!.geometry!.location!.lng!)
-    //       )
-    // };
 
     return Scaffold(
       key: sKey,
@@ -579,6 +566,10 @@ class _MainScreenState extends State<MainScreen> {
 
                       ElevatedButton(
                         onPressed: () async {
+
+                          FirebaseAuth auth = FirebaseAuth.instance;
+User? user = auth.currentUser;
+
                           if (Provider.of<AppInfo>(context, listen: false)
                                   .userDropOffLocation !=
                               null) {
@@ -595,6 +586,9 @@ class _MainScreenState extends State<MainScreen> {
                               "fromLongitute": userCurrentPosition!.longitude,
                               "status": "pending",
                               "user_id": 1,
+                              "name": user!.displayName.toString(),
+                              "phone": user.phoneNumber.toString(),
+                              
                             });
                           } else {
                             Fluttertoast.showToast(
