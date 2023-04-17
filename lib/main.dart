@@ -6,10 +6,15 @@ import 'package:user_fyp/info%20handler/app_info.dart';
 import 'package:user_fyp/main%20screens/main_screen.dart';
 import 'package:user_fyp/splashScreen/splash_screen.dart';
 
+import 'firebase_options.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    name: 'kiet-ride-sharing-app',
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(MultiProvider(
     providers: [

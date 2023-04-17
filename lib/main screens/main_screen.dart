@@ -279,6 +279,18 @@ class _MainScreenState extends State<MainScreen> {
 
     //saveRideRequestInformation();
     //createActiveNearByDriverIconMarker();
+
+    DatabaseReference ref =
+        FirebaseDatabase.instance.ref().child('requestRides');
+
+    ref.onValue.listen((dynamic snapshot) {
+      // DataSnapshot contains data from the Realtime Database
+      print("wroking");
+      var data = snapshot.value;
+      print(data);
+    }, onError: (error) {
+      print("Failed to listen for data changes: $error");
+    });
   }
 
   saveRideRequestInformation() {
@@ -353,7 +365,10 @@ class _MainScreenState extends State<MainScreen> {
       body: Stack(
         children: [
           StreamBuilder<dynamic>(
-              stream: FirebaseDatabase.instance.ref().child('drivers').onValue,
+              stream: FirebaseDatabase.instance
+                  .ref()
+                  .child('activeDrivers')
+                  .onValue,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
@@ -566,16 +581,18 @@ class _MainScreenState extends State<MainScreen> {
 
                       ElevatedButton(
                         onPressed: () async {
-
-                          FirebaseAuth auth = FirebaseAuth.instance;
-User? user = auth.currentUser;
-
                           if (Provider.of<AppInfo>(context, listen: false)
                                   .userDropOffLocation !=
                               null) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) =>
+                                  ProgressDialogue(
+                                message: "Please wait...",
+                              ),
+                            );
                             DatabaseReference ref = FirebaseDatabase.instance
-                                .ref("requestRides")
-                                .push();
+                                .ref("requestRides").child(currentFirebaseUser!.uid);
 
                             await ref.set({
                               "toLatitude": userLocationInfo
@@ -585,10 +602,11 @@ User? user = auth.currentUser;
                               "fromLatitude": userCurrentPosition!.latitude,
                               "fromLongitute": userCurrentPosition!.longitude,
                               "status": "pending",
-                              "user_id": 1,
-                              "name": user!.displayName.toString(),
-                              "phone": user.phoneNumber.toString(),
-                              
+                              "user_id": currentFirebaseUser!.uid,
+                              "name":
+                                  currentFirebaseUser!.displayName.toString(),
+                              "phone":
+                                  currentFirebaseUser!.phoneNumber.toString(),
                             });
                           } else {
                             Fluttertoast.showToast(

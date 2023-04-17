@@ -1,43 +1,42 @@
 {
   "project_info": {
-    "project_number": "48095245866",
-    "firebase_url": "https://fyp-mrs-ride-default-rtdb.firebaseio.com",
-    "project_id": "fyp-mrs-ride",
-    "storage_bucket": "fyp-mrs-ride.appspot.com"
+    "project_number": "196706800442",
+    "firebase_url": "https://kiet-ride-sharing-app-default-rtdb.firebaseio.com",
+    "project_id": "kiet-ride-sharing-app",
+    "storage_bucket": "kiet-ride-sharing-app.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:48095245866:android:a8b905a2879ae5e4777553",
+        "mobilesdk_app_id": "1:196706800442:android:6ba208c904d765de46b603",
         "android_client_info": {
           "package_name": "com.rashid.rider"
         }
       },
       "oauth_client": [
         {
-          "client_id": "48095245866-78kc551d2h39fdoojhkvbs34igaodqeh.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.rashid.rider",
-            "certificate_hash": "317038ca7519aab074ca953baa8b8c88ffdcf174"
-          }
-        },
-        {
-          "client_id": "48095245866-ku9iskjpgido6rt7khqss9k5qo3lcsar.apps.googleusercontent.com",
+          "client_id": "196706800442-d3evc0loaaa67dbpeakmdopdi14cl0jr.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDNKj2L5ovGQOgFG_MtxXAC8HO6SzNRnEk"
+          "current_key": "AIzaSyAk-ysCirVaLja0FPnaoyWgsrUp8gVwLzk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "48095245866-ku9iskjpgido6rt7khqss9k5qo3lcsar.apps.googleusercontent.com",
+              "client_id": "196706800442-d3evc0loaaa67dbpeakmdopdi14cl0jr.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "196706800442-02jkku84u09g3ct8m2k1m8v177pjnfnf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rider"
+              }
             }
           ]
         }
@@ -45,36 +44,35 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:48095245866:android:fe0a3c865adb51c4777553",
+        "mobilesdk_app_id": "1:196706800442:android:c18ae68ae4e209db46b603",
         "android_client_info": {
           "package_name": "com.rashid.user_fyp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "48095245866-i0bajie7n61bq1u9dk5fdt6mduc8pafi.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.rashid.user_fyp",
-            "certificate_hash": "317038ca7519aab074ca953baa8b8c88ffdcf174"
-          }
-        },
-        {
-          "client_id": "48095245866-ku9iskjpgido6rt7khqss9k5qo3lcsar.apps.googleusercontent.com",
+          "client_id": "196706800442-d3evc0loaaa67dbpeakmdopdi14cl0jr.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDNKj2L5ovGQOgFG_MtxXAC8HO6SzNRnEk"
+          "current_key": "AIzaSyAk-ysCirVaLja0FPnaoyWgsrUp8gVwLzk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "48095245866-ku9iskjpgido6rt7khqss9k5qo3lcsar.apps.googleusercontent.com",
+              "client_id": "196706800442-d3evc0loaaa67dbpeakmdopdi14cl0jr.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "196706800442-02jkku84u09g3ct8m2k1m8v177pjnfnf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rider"
+              }
             }
           ]
         }

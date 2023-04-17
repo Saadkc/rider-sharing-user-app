@@ -234,8 +234,8 @@ class _SignupScreenState extends State<SignupScreen> {
               ElevatedButton(
                   onPressed: ()
                   {
-                    // validationForm();
-                    Navigator.push(context, MaterialPageRoute(builder: (c)=> MainScreen()));
+                    validationForm();
+                    // Navigator.push(context, MaterialPageRoute(builder: (c)=> MainScreen()));
                   },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.orange,
