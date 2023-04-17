@@ -281,13 +281,12 @@ class _MainScreenState extends State<MainScreen> {
     //createActiveNearByDriverIconMarker();
 
     DatabaseReference ref =
-        FirebaseDatabase.instance.ref().child('requestRides');
+        FirebaseDatabase.instance.ref().child('requestRides').child(currentFirebaseUser!.uid);
 
-    ref.onValue.listen((dynamic snapshot) {
-      // DataSnapshot contains data from the Realtime Database
-      print("wroking");
-      var data = snapshot.value;
-      print(data);
+    ref.onValue.listen((DatabaseEvent snapshot) {
+      print("working");
+      print(snapshot.snapshot.value);
+      //now just we have to navigate to another screen and make some polylines start a ride
     }, onError: (error) {
       print("Failed to listen for data changes: $error");
     });
