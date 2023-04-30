@@ -593,12 +593,12 @@ class _MainScreenState extends State<MainScreen> {
                               "fromLongitute": userCurrentPosition!.longitude,
                               "status": "pending",
                               "user_id": currentFirebaseUser!.uid,
-                              "name":
-                                  currentFirebaseUser!.displayName.toString(),
-                              "phone":
-                                  currentFirebaseUser!.phoneNumber.toString(),
+                              "passenger_name": userModelCurrentInfo!.name,
+                              "passenger_phone": userModelCurrentInfo!.phone.toString(),
+                              "passenger_email": userModelCurrentInfo!.email,
                             }).then((value) {
-                              Navigator.push( // push replacement krna isse
+                              Navigator.push(
+                                  // push replacement krna isse
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
@@ -633,6 +633,7 @@ class _MainScreenState extends State<MainScreen> {
                           "Request a Ride",
                         ),
                       ),
+                    
                     ],
                   ),
                 ),
