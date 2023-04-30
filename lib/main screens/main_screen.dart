@@ -11,6 +11,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:user_fyp/main%20screens/finding_rider.dart';
 import 'package:user_fyp/main%20screens/search_places_screen.dart';
 import 'package:user_fyp/main%20screens/select_nearest_active_driver_screen.dart';
 import 'package:user_fyp/widgets/progress_dialog.dart';
@@ -279,17 +280,6 @@ class _MainScreenState extends State<MainScreen> {
 
     //saveRideRequestInformation();
     //createActiveNearByDriverIconMarker();
-
-    DatabaseReference ref =
-        FirebaseDatabase.instance.ref().child('requestRides').child(currentFirebaseUser!.uid);
-
-    ref.onValue.listen((DatabaseEvent snapshot) {
-      print("working");
-      print(snapshot.snapshot.value);
-      //now just we have to navigate to another screen and make some polylines start a ride
-    }, onError: (error) {
-      print("Failed to listen for data changes: $error");
-    });
   }
 
   saveRideRequestInformation() {
@@ -349,7 +339,7 @@ class _MainScreenState extends State<MainScreen> {
 
     return Scaffold(
       key: sKey,
-      drawer: Container(
+      drawer: SizedBox(
         width: 265,
         child: Theme(
           data: Theme.of(context).copyWith(
@@ -375,6 +365,11 @@ class _MainScreenState extends State<MainScreen> {
                 data = snapshot.data.snapshot.value;
 
                 List<ActiveNearbyAvailableDrivers> drivers = [];
+
+                //             // print("check driver" +
+                //             //     data["dW6oqqQlBnh4cbmElzYOuZZyusU2"]['latitude']);
+
+                // print("check driver: " + data["dW6oqqQlBnh4cbmElzYOuZZyusU2"]["latitude"].toString());
 
                 data.forEach((key, value) {
                   drivers.add(
@@ -412,7 +407,6 @@ class _MainScreenState extends State<MainScreen> {
                                         .map((loc) => loc.position)
                                         .toList()),
                                     1));
-                            // _getPolyline();
                           });
                           blackThemeGoogleMap();
 
@@ -420,11 +414,7 @@ class _MainScreenState extends State<MainScreen> {
                             bottomPaddingOfMap = 240;
                           });
 
-                          // locateUserPosition();
-                          // initializeGeoFireListener();
                           displayActiveDriversOnUsersMap(drivers);
-                          // createActiveNearByDriverIconMarker();
-                          // saveRideRequestInformation();
                         },
                       );
               }),
@@ -486,8 +476,8 @@ class _MainScreenState extends State<MainScreen> {
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
+                            children: const [
+                              Text(
                                 "From",
                                 style:
                                     TextStyle(color: Colors.grey, fontSize: 12),
@@ -497,8 +487,8 @@ class _MainScreenState extends State<MainScreen> {
                                 // Provider.of<AppInfo>(context).userPickUpLocation != null
                                 //     ? (Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0,24) + "..."
                                 //     : "not getting address",
-                                style: const TextStyle(
-                                    color: Colors.grey, fontSize: 14),
+                                style:
+                                    TextStyle(color: Colors.grey, fontSize: 14),
                               ),
                             ],
                           ),
@@ -591,7 +581,8 @@ class _MainScreenState extends State<MainScreen> {
                               ),
                             );
                             DatabaseReference ref = FirebaseDatabase.instance
-                                .ref("requestRides").child(currentFirebaseUser!.uid);
+                                .ref("requestRides")
+                                .child(currentFirebaseUser!.uid);
 
                             await ref.set({
                               "toLatitude": userLocationInfo
@@ -606,6 +597,12 @@ class _MainScreenState extends State<MainScreen> {
                                   currentFirebaseUser!.displayName.toString(),
                               "phone":
                                   currentFirebaseUser!.phoneNumber.toString(),
+                            }).then((value) {
+                              Navigator.push( // push replacement krna isse
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const FindingRiderScreen()));
                             });
                           } else {
                             Fluttertoast.showToast(

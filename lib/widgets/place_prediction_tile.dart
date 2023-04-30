@@ -6,12 +6,11 @@ import '../assistants/request_assistant.dart';
 import '../global/map_key.dart';
 import '../info handler/app_info.dart';
 import '../info handler/directions.dart';
-import '../mixin/location_mixin.dart';
 import '../models/predicted_places.dart';
 
 
 
-class PlacePredictionTileDesign extends StatelessWidget with Location {
+class PlacePredictionTileDesign extends StatelessWidget {
   final PredictedPlaces? predictedPlaces;
 
   PlacePredictionTileDesign({this.predictedPlaces});
