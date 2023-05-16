@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -359,17 +360,19 @@ class _MainScreenState extends State<MainScreen> {
                   .child('activeDrivers')
                   .onValue,
               builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                data = snapshot.data.snapshot.value;
+
+                // Parse the updated marker data from the snapshot
+
+                Map data = snapshot.data!.snapshot.value;
 
                 List<ActiveNearbyAvailableDrivers> drivers = [];
-
-                //             // print("check driver" +
-                //             //     data["dW6oqqQlBnh4cbmElzYOuZZyusU2"]['latitude']);
-
-                // print("check driver: " + data["dW6oqqQlBnh4cbmElzYOuZZyusU2"]["latitude"].toString());
 
                 data.forEach((key, value) {
                   drivers.add(
@@ -381,21 +384,28 @@ class _MainScreenState extends State<MainScreen> {
                   );
                 });
 
+                userLocationInfo.displayActiveDriversOnUsersMap(drivers);
+
+                // WidgetsBinding.instance.addPostFrameCallback((_) {
+                //   displayActiveDriversOnUsersMap(drivers);
+
+                // });
+
+                // Rest of the code...
+
                 return _initialPosition == null
                     ? const Center(
                         child: CircularProgressIndicator(),
                       )
                     : GoogleMap(
                         padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
-
                         mapType: MapType.normal,
                         myLocationEnabled: true,
                         zoomGesturesEnabled: true,
                         zoomControlsEnabled: true,
                         initialCameraPosition: _initialPosition!,
                         polylines: polyLineSet,
-                        // markers: markers,
-                        markers: Set.from(markersSet),
+                        markers: Set.from(userLocationInfo.markersSet),
                         circles: circlesSet,
                         onMapCreated: (GoogleMapController controller) {
                           _controllerGoogleMap.complete(controller);
@@ -414,7 +424,8 @@ class _MainScreenState extends State<MainScreen> {
                             bottomPaddingOfMap = 240;
                           });
 
-                          displayActiveDriversOnUsersMap(drivers);
+                          // Update the markers on the map after the map is created
+                          // displayActiveDriversOnUsersMap(drivers);
                         },
                       );
               }),
@@ -542,12 +553,9 @@ class _MainScreenState extends State<MainScreen> {
                                 ),
                                 Text(
                                   // "where to go",
-                                  Provider.of<AppInfo>(context)
-                                              .userDropOffLocation !=
-                                          null
-                                      ? Provider.of<AppInfo>(context)
-                                          .userDropOffLocation!
-                                          .locationName!
+                                  userLocationInfo.userDropOffLocation != null
+                                      ? userLocationInfo
+                                          .userDropOffLocation!.locationName!
                                       : "Where to go?",
                                   style: const TextStyle(
                                       color: Colors.grey, fontSize: 14),
@@ -570,9 +578,7 @@ class _MainScreenState extends State<MainScreen> {
 
                       ElevatedButton(
                         onPressed: () async {
-                          if (Provider.of<AppInfo>(context, listen: false)
-                                  .userDropOffLocation !=
-                              null) {
+                          if (userLocationInfo.userDropOffLocation != null) {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) =>
@@ -591,10 +597,15 @@ class _MainScreenState extends State<MainScreen> {
                                   .userDropOffLocation!.locationLongitude,
                               "fromLatitude": userCurrentPosition!.latitude,
                               "fromLongitute": userCurrentPosition!.longitude,
+                              "dropOffLocation": userLocationInfo
+                                  .userDropOffLocation!.locationName,
+                              "pickupLocation": userLocationInfo
+                                  .userPickUpLocation!.locationName,
                               "status": "pending",
                               "user_id": currentFirebaseUser!.uid,
                               "passenger_name": userModelCurrentInfo!.name,
-                              "passenger_phone": userModelCurrentInfo!.phone.toString(),
+                              "passenger_phone":
+                                  userModelCurrentInfo!.phone.toString(),
                               "passenger_email": userModelCurrentInfo!.email,
                             }).then((value) {
                               Navigator.push(
@@ -633,7 +644,6 @@ class _MainScreenState extends State<MainScreen> {
                           "Request a Ride",
                         ),
                       ),
-                    
                     ],
                   ),
                 ),
@@ -868,9 +878,6 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     markersSet = driversMarkerSet;
-
-    setState(() {});
-    // });
   }
 
   createActiveNearByDriverIconMarker() {

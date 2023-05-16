@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+
 
 import '../BBC LONDON/MapUtlis.dart';
 import '../assistants/assistant_methods.dart';
@@ -15,6 +17,7 @@ import '../global/global.dart';
 import '../info handler/app_info.dart';
 import '../models/active_nearby_available_drivers.dart';
 import '../widgets/progress_dialog.dart';
+import 'feedback_screen.dart';
 
 class RideScreen extends StatefulWidget {
   const RideScreen({super.key});
@@ -70,11 +73,35 @@ class _RideScreenState extends State<RideScreen> {
     });
   }
 
+  void checkRideAccepted() {
+    dynamic ref = FirebaseDatabase.instance
+        .ref()
+        .child("requestRides")
+        .child(currentFirebaseUser!.uid)
+        .onValue;
+
+    ref.listen((event) {
+      if (event.snapshot.value["user_id"] == currentFirebaseUser!.uid) {
+        String status = event.snapshot.value["status"].toString();
+        if (status == "completed") {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => const FeedBackScreen()));
+        }
+      }
+    });
+  }
+
   @override
   void initState() {
     locateUserPosition();
+    checkRideAccepted();
     super.initState();
   }
+
+  void callNumber(String phoneNumber) async {
+  String number = phoneNumber; //set the number here
+  await FlutterPhoneDirectCaller.callNumber(number);
+}
 
   @override
   Widget build(BuildContext context) {
@@ -91,11 +118,6 @@ class _RideScreenState extends State<RideScreen> {
                   .child(currentFirebaseUser!.uid)
                   .onValue,
               builder: (context, snapshot) {
-                // if(snapshot.hasData && !snapshot.hasError && snapshot.data.snapshot.value != null){
-                //
-
-                // }
-
                 if (!snapshot.hasData) {
                   return const Center(
                     child: CircularProgressIndicator(),
@@ -189,19 +211,6 @@ class _RideScreenState extends State<RideScreen> {
                                 //from
                                 Row(
                                   children: [
-                                    Container(
-                                      height: 60,
-                                      width: 60,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.blueAccent,
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(50),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 12.0,
-                                    ),
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -218,153 +227,88 @@ class _RideScreenState extends State<RideScreen> {
                                         ),
                                       ],
                                     ),
+                                    const Spacer(),
+                                    GestureDetector(
+                                      onTap: (){
+                                        callNumber(data["passenger_phone"]);
+                                      },
+                                      child: const Icon(Icons.call, color: Colors.green))
                                   ],
                                 ),
 
-                                const SizedBox(height: 10.0),
+                                const SizedBox(height: 20.0),
 
-                                // const Divider(
-                                //   height: 1,
-                                //   thickness: 1,
-                                //   color: Colors.grey,
-                                // ),
-
-                                // const SizedBox(height: 16.0),
-
-                                // //to
-                                // GestureDetector(
-                                //   onTap: () async {
-                                //     //go to search places screen
-                                //     // var responseFromSearchScreen = await Navigator.push(
-                                //     //     context,
-                                //     //     MaterialPageRoute(
-                                //     //         builder: (c) => SearchPlacesScreen()));
-
-                                //     // if (responseFromSearchScreen == "obtainedDropoff") {
-                                //     //   setState(() {
-                                //     //     openNavigationDrawer = false;
-                                //     //   });
-
-                                //     //   //draw routes - draw polyline
-
-                                //     // }
-                                //   },
-                                //   child: Row(
-                                //     children: [
-                                //       const Icon(
-                                //         Icons.add_location_alt_outlined,
-                                //         color: Colors.grey,
-                                //       ),
-                                //       const SizedBox(
-                                //         width: 12.0,
-                                //       ),
-                                //       Column(
-                                //         crossAxisAlignment:
-                                //             CrossAxisAlignment.start,
-                                //         children: [
-                                //           const Text(
-                                //             "To",
-                                //             style: TextStyle(
-                                //                 color: Colors.grey, fontSize: 12),
-                                //           ),
-                                //           Text(
-                                //             // "where to go",
-                                //             Provider.of<AppInfo>(context)
-                                //                         .userDropOffLocation !=
-                                //                     null
-                                //                 ? Provider.of<AppInfo>(context)
-                                //                     .userDropOffLocation!
-                                //                     .locationName!
-                                //                 : "Where to go?",
-                                //             style: const TextStyle(
-                                //                 color: Colors.grey, fontSize: 14),
-                                //           ),
-                                //         ],
-                                //       ),
-                                //     ],
-                                //   ),
-                                // ),
-
-                                // const SizedBox(height: 10.0),
-
-                                // const Divider(
-                                //   height: 1,
-                                //   thickness: 1,
-                                //   color: Colors.grey,
-                                // ),
-
-                                // const SizedBox(height: 16.0),
-
-                                // ElevatedButton(
-                                //   onPressed: () async {
-                                //     if (Provider.of<AppInfo>(context, listen: false)
-                                //             .userDropOffLocation !=
-                                //         null) {
-                                //       showDialog(
-                                //         context: context,
-                                //         builder: (BuildContext context) =>
-                                //             ProgressDialogue(
-                                //           message: "Please wait...",
-                                //         ),
-                                //       );
-                                //       DatabaseReference ref = FirebaseDatabase
-                                //           .instance
-                                //           .ref("requestRides")
-                                //           .child(currentFirebaseUser!.uid);
-
-                                //       await ref.set({
-                                //         "toLatitude": userLocationInfo
-                                //             .userDropOffLocation!.locationLatitude,
-                                //         "toLongitute": userLocationInfo
-                                //             .userDropOffLocation!.locationLongitude,
-                                //         "fromLatitude":
-                                //             userCurrentPosition!.latitude,
-                                //         "fromLongitute":
-                                //             userCurrentPosition!.longitude,
-                                //         "status": "pending",
-                                //         "user_id": currentFirebaseUser!.uid,
-                                //         "name": currentFirebaseUser!.displayName
-                                //             .toString(),
-                                //         "phone": currentFirebaseUser!.phoneNumber
-                                //             .toString(),
-                                //       }).then((value) {
-                                //         // Navigator.push( // push replacement krna isse
-                                //         //     context,
-                                //         //     MaterialPageRoute(
-                                //         //         builder: (context) =>
-                                //         //             const FindingRiderScreen()));
-                                //       });
-                                //     } else {
-                                //       Fluttertoast.showToast(
-                                //           msg:
-                                //               "Please select destination location");
-                                //     }
-
-                                //     // if()
-
-                                //     // saveRideRequestInformation();
-                                //     // Navigator.push(
-                                //     //     context, //SelectNearestActiveDriversScreen
-                                //     //     MaterialPageRoute(
-                                //     //         builder: (c) => TrackingButton()));
-                                //     // if(Provider.of<AppInfo>(context, listen: false).userDropOffLocation != null)
-                                //     // {
-                                //     //   saveRideRequestInformation();
-                                //     // }
-                                //     // else
-                                //     // {
-                                //     //   Fluttertoast.showToast(msg: "Please select destination location");
-                                //     // }
-                                //   },
-                                //   style: ElevatedButton.styleFrom(
-                                //       primary: Colors.green,
-                                //       textStyle: const TextStyle(
-                                //           fontSize: 16,
-                                //           fontWeight: FontWeight.bold)),
-                                //   child: const Text(
-                                //     "Request a Ride",
-                                //   ),
-                                // ),
+                                Container(
+                                  height: 100,
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[700],
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(height: 15.0),
+                                      Row(
+                                        children: [
+                                          const SizedBox(width: 10.0),
+                                          const Icon(
+                                            Icons.location_on,
+                                            color: Colors.green,
+                                          ),
+                                          const SizedBox(width: 10.0),
+                                          Expanded(
+                                            child: Text(
+                                              "from: ${data["pickupLocation"]}",
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 5.0),
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 40),
+                                        child: Divider(
+                                          color: Colors.white,
+                                          height: 1,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 15.0),
+                                      Row(
+                                        children: [
+                                          const SizedBox(width: 10.0),
+                                          const Icon(
+                                            Icons.location_on,
+                                            color: Colors.green,
+                                          ),
+                                          const SizedBox(width: 10.0),
+                                          Expanded(
+                                            child: Text(
+                                              "To: ${data["dropOffLocation"]}",
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 5.0),
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 40),
+                                        child: Divider(
+                                          color: Colors.white,
+                                          height: 1,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -373,13 +317,6 @@ class _RideScreenState extends State<RideScreen> {
                 ]);
               }),
     );
-
-    // Align(
-    //   alignment: Alignment.center,
-    //   child: ProgressDialogue(
-    //     message: "Finding Rider for you...",
-    //   ),
-    // )
   }
 
   Future<void> drawPolyLineFromOriginToDestination() async {
