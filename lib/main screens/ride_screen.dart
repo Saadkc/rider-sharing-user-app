@@ -8,7 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-
+import 'package:user_fyp/info%20handler/directions.dart';
 
 import '../BBC LONDON/MapUtlis.dart';
 import '../assistants/assistant_methods.dart';
@@ -46,6 +46,7 @@ class _RideScreenState extends State<RideScreen> {
 
   bool activeNearbyDriverKeysLoaded = false;
   BitmapDescriptor? activeNearbyIcon;
+  
 
   locateUserPosition() async {
     Position cPosition = await Geolocator.getCurrentPosition(
@@ -86,6 +87,8 @@ class _RideScreenState extends State<RideScreen> {
         if (status == "completed") {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => const FeedBackScreen()));
+        } else if (status == "arrived"){
+
         }
       }
     });
@@ -99,9 +102,9 @@ class _RideScreenState extends State<RideScreen> {
   }
 
   void callNumber(String phoneNumber) async {
-  String number = phoneNumber; //set the number here
-  await FlutterPhoneDirectCaller.callNumber(number);
-}
+    String number = phoneNumber; //set the number here
+    await FlutterPhoneDirectCaller.callNumber(number);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +145,8 @@ class _RideScreenState extends State<RideScreen> {
                     onMapCreated: (GoogleMapController controller) async {
                       _controllerGoogleMap.complete(controller);
                       newGoogleMapController = controller;
-                      await drawPolyLineFromOriginToDestination();
+                      await drawPolyLineFromOriginToDestination(
+                          snapshot.data.snapshot.value);
                       Future.delayed(const Duration(milliseconds: 200), () {
                         controller.animateCamera(CameraUpdate.newLatLngBounds(
                             MapUtils.boundsFromLatLngList(
@@ -216,23 +220,59 @@ class _RideScreenState extends State<RideScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          "Driver Name: ${data["passenger_name"]}",
+                                          "Driver Name: ${data["driver_name"]}",
                                           style: const TextStyle(
                                               color: Colors.grey, fontSize: 12),
                                         ),
                                         Text(
-                                          "Driver Phone: ${data["passenger_phone"]}",
+                                          "Driver Phone: ${data["driver_phone"]}",
                                           style: const TextStyle(
                                               color: Colors.grey, fontSize: 14),
+                                        ),
+                                        Row(
+                                          children: const [
+                                            Text(
+                                              "Reviews:",
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 14),
+                                            ),
+                                            Icon(
+                                              Icons.star,
+                                              color: Colors.yellow,
+                                              size: 15,
+                                            ),
+                                            Icon(
+                                              Icons.star,
+                                              color: Colors.yellow,
+                                              size: 15,
+                                            ),
+                                            Icon(
+                                              Icons.star,
+                                              color: Colors.yellow,
+                                              size: 15,
+                                            ),
+                                            Icon(
+                                              Icons.star,
+                                              color: Colors.yellow,
+                                              size: 15,
+                                            ),
+                                            Icon(
+                                              Icons.star,
+                                              color: Colors.yellow,
+                                              size: 15,
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
                                     const Spacer(),
                                     GestureDetector(
-                                      onTap: (){
-                                        callNumber(data["passenger_phone"]);
-                                      },
-                                      child: const Icon(Icons.call, color: Colors.green))
+                                        onTap: () {
+                                          callNumber(data["driver_phone"]);
+                                        },
+                                        child: const Icon(Icons.call,
+                                            color: Colors.green))
                                   ],
                                 ),
 
@@ -246,68 +286,78 @@ class _RideScreenState extends State<RideScreen> {
                                     color: Colors.grey[700],
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(height: 15.0),
-                                      Row(
-                                        children: [
-                                          const SizedBox(width: 10.0),
-                                          const Icon(
-                                            Icons.location_on,
-                                            color: Colors.green,
+                                  child: data["status"] == "accepted"
+                                      ? const Center(
+                                          child: Text(
+                                            "Your Rider is on the way",
+                                            style:
+                                                TextStyle(color: Colors.white),
                                           ),
-                                          const SizedBox(width: 10.0),
-                                          Expanded(
-                                            child: Text(
-                                              "from: ${data["pickupLocation"]}",
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 16),
+                                        )
+                                      : Column(
+                                          children: [
+                                            const SizedBox(height: 15.0),
+                                            Row(
+                                              children: [
+                                                const SizedBox(width: 10.0),
+                                                const Icon(
+                                                  Icons.location_on,
+                                                  color: Colors.green,
+                                                ),
+                                                const SizedBox(width: 10.0),
+                                                Expanded(
+                                                  child: Text(
+                                                    "from: ${data["pickupLocation"]}",
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 16),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 5.0),
-                                      const Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 40),
-                                        child: Divider(
-                                          color: Colors.white,
-                                          height: 1,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 15.0),
-                                      Row(
-                                        children: [
-                                          const SizedBox(width: 10.0),
-                                          const Icon(
-                                            Icons.location_on,
-                                            color: Colors.green,
-                                          ),
-                                          const SizedBox(width: 10.0),
-                                          Expanded(
-                                            child: Text(
-                                              "To: ${data["dropOffLocation"]}",
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 16),
+                                            const SizedBox(height: 5.0),
+                                            const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 40),
+                                              child: Divider(
+                                                color: Colors.white,
+                                                height: 1,
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 5.0),
-                                      const Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 40),
-                                        child: Divider(
-                                          color: Colors.white,
-                                          height: 1,
+                                            const SizedBox(height: 15.0),
+                                            Row(
+                                              children: [
+                                                const SizedBox(width: 10.0),
+                                                const Icon(
+                                                  Icons.location_on,
+                                                  color: Colors.green,
+                                                ),
+                                                const SizedBox(width: 10.0),
+                                                Expanded(
+                                                  child: Text(
+                                                    "To: ${data["dropOffLocation"]}",
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 16),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 5.0),
+                                            const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 40),
+                                              child: Divider(
+                                                color: Colors.white,
+                                                height: 1,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
                                 ),
                               ],
                             ),
@@ -319,11 +369,19 @@ class _RideScreenState extends State<RideScreen> {
     );
   }
 
-  Future<void> drawPolyLineFromOriginToDestination() async {
+  Future<void> drawPolyLineFromOriginToDestination(Map data) async {
     var originPosition =
         Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
-    var destinationPosition =
-        Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
+    var destinationPosition;
+    if (data["status"] == "accepted") {
+      destinationPosition = Directions(
+          locationName: data["Driver Location"],
+          locationLatitude: data["driver_lat"],
+          locationLongitude: data["driver_lng"]);
+    } else {
+      destinationPosition =
+          Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
+    }
 
     var originLatLng = LatLng(
         originPosition!.locationLatitude!, originPosition.locationLongitude!);

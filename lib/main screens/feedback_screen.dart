@@ -9,7 +9,7 @@ import '../info handler/directions.dart';
 import 'main_screen.dart';
 
 class FeedBackScreen extends StatefulWidget {
-  const FeedBackScreen({super.key});
+  const FeedBackScreen({Key? key}) : super(key: key);
 
   @override
   State<FeedBackScreen> createState() => _FeedBackScreenState();
@@ -17,6 +17,7 @@ class FeedBackScreen extends StatefulWidget {
 
 class _FeedBackScreenState extends State<FeedBackScreen> {
   TextEditingController controller = TextEditingController();
+  int indexList = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +66,71 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
                     ),
                   ),
                   Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30),
+                    child: Row(
+                      children: [
+                        const Text("Rate Rider"),
+                        const SizedBox(width: 20),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              indexList =
+                                  1; // Assuming indexList is a single integer variable
+                            });
+                          },
+                          child: Icon(
+                            Icons.star,
+                            color: indexList >= 1 ? Colors.yellow : Colors.grey,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              indexList = 2;
+                            });
+                          },
+                          child: Icon(
+                            Icons.star,
+                            color: indexList >= 2 ? Colors.yellow : Colors.grey,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              indexList = 3;
+                            });
+                          },
+                          child: Icon(
+                            Icons.star,
+                            color: indexList >= 3 ? Colors.yellow : Colors.grey,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              indexList = 4;
+                            });
+                          },
+                          child: Icon(
+                            Icons.star,
+                            color: indexList >= 4 ? Colors.yellow : Colors.grey,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              indexList = 5;
+                            });
+                          },
+                          child: Icon(
+                            Icons.star,
+                            color: indexList == 5 ? Colors.yellow : Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 30, vertical: 50),
                     child: CupertinoButton(
@@ -81,6 +147,7 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
                               .push()
                               .set({
                             'feedback': controller.text,
+                            'rating': indexList.toString(),
                           }).then((value) {
                             userLocationInfo.resetValues();
 
@@ -92,7 +159,7 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => MainScreen()),
-                            (route) => false);
+                                (route) => false);
                           });
                         }),
                   )
