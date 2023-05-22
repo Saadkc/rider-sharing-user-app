@@ -46,7 +46,7 @@ class _RideScreenState extends State<RideScreen> {
 
   bool activeNearbyDriverKeysLoaded = false;
   BitmapDescriptor? activeNearbyIcon;
-  
+
 
   locateUserPosition() async {
     Position cPosition = await Geolocator.getCurrentPosition(
@@ -88,7 +88,7 @@ class _RideScreenState extends State<RideScreen> {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => const FeedBackScreen()));
         } else if (status == "arrived"){
-
+          drawPolyLineFromOriginToDestination(event.snapshot.value);
         }
       }
     });
