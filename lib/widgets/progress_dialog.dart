@@ -28,7 +28,7 @@ class ProgressDialogue extends StatelessWidget {
                 message!,
                 style: const TextStyle(
                   color: Colors.lightGreenAccent,
-                  fontSize: 16,
+                  fontSize: 12,
                 ),
 
               )

@@ -18,6 +18,7 @@ import '../info handler/app_info.dart';
 import '../models/active_nearby_available_drivers.dart';
 import '../widgets/progress_dialog.dart';
 import 'feedback_screen.dart';
+import 'schedule_screen.dart';
 
 class RideScreen extends StatefulWidget {
   const RideScreen({super.key});
@@ -46,7 +47,6 @@ class _RideScreenState extends State<RideScreen> {
 
   bool activeNearbyDriverKeysLoaded = false;
   BitmapDescriptor? activeNearbyIcon;
-
 
   locateUserPosition() async {
     Position cPosition = await Geolocator.getCurrentPosition(
@@ -87,7 +87,7 @@ class _RideScreenState extends State<RideScreen> {
         if (status == "completed") {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => const FeedBackScreen()));
-        } else if (status == "arrived"){
+        } else if (status == "arrived") {
           drawPolyLineFromOriginToDestination(event.snapshot.value);
         }
       }
@@ -266,13 +266,35 @@ class _RideScreenState extends State<RideScreen> {
                                         ),
                                       ],
                                     ),
-                                    data["status"] == "accepted" ? const SizedBox.shrink() : const Spacer(),
-                                    data["status"] == "accepted" ? const SizedBox.shrink() : GestureDetector(
-                                        onTap: () {
-                                          callNumber(data["driver_phone"]);
-                                        },
-                                        child: const Icon(Icons.call,
-                                            color: Colors.green))
+                                    data["status"] == "accepted"
+                                        ? const SizedBox.shrink()
+                                        : const Spacer(),
+                                    data["status"] == "accepted"
+                                        ? const SizedBox.shrink()
+                                        : Row(
+                                            children: [
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                 ScheduleScreen(driverId: data['driver_id'],)));
+                                                  },
+                                                  child:
+                                                      const Text("Schedule")),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              GestureDetector(
+                                                  onTap: () {
+                                                    callNumber(
+                                                        data["driver_phone"]);
+                                                  },
+                                                  child: const Icon(Icons.call,
+                                                      color: Colors.green)),
+                                            ],
+                                          )
                                   ],
                                 ),
 
@@ -480,10 +502,9 @@ class _RideScreenState extends State<RideScreen> {
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
     );
 
-    setState(() {
-      markersSet.add(originMarker);
-      markersSet.add(destinationMarker);
-    });
+    // setState(() {
+
+    // });
 
     Circle originCircle = Circle(
       circleId: const CircleId("originID"),
@@ -504,6 +525,8 @@ class _RideScreenState extends State<RideScreen> {
     );
 
     setState(() {
+      markersSet.add(originMarker);
+      markersSet.add(destinationMarker);
       circlesSet.add(originCircle);
       circlesSet.add(destinationCircle);
     });
