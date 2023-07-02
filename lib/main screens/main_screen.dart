@@ -33,6 +33,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  TextEditingController passengerController = TextEditingController();
   final Completer<GoogleMapController> _controllerGoogleMap = Completer();
   GoogleMapController? newGoogleMapController;
   CameraPosition? _initialPosition;
@@ -45,7 +46,7 @@ class _MainScreenState extends State<MainScreen> {
   // );
 
   GlobalKey<ScaffoldState> sKey = GlobalKey<ScaffoldState>();
-  double searchLocationContainerHeight = 220;
+  double searchLocationContainerHeight = 250;
 
   Position? userCurrentPosition;
   var geoLocator = Geolocator();
@@ -374,18 +375,15 @@ class _MainScreenState extends State<MainScreen> {
 
                 List<ActiveNearbyAvailableDrivers> drivers = [];
 
-                
-
                 data.forEach((key, value) {
-                    drivers.add(
-                      ActiveNearbyAvailableDrivers(
-                        driverId: key.toString(),
-                        locationLatitude: value['latitude'],
-                        locationLongitude: value['longitude'],
-                      ),
-                    );
-                  });
-                
+                  drivers.add(
+                    ActiveNearbyAvailableDrivers(
+                      driverId: key.toString(),
+                      locationLatitude: value['latitude'],
+                      locationLongitude: value['longitude'],
+                    ),
+                  );
+                });
 
                 userLocationInfo.displayActiveDriversOnUsersMap(drivers);
 
@@ -577,7 +575,27 @@ class _MainScreenState extends State<MainScreen> {
                         color: Colors.grey,
                       ),
 
-                      const SizedBox(height: 16.0),
+                      const SizedBox(height: 8.0),
+
+                      TextFormField(
+                        controller: passengerController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Passengers',
+                            labelStyle: TextStyle(color: Colors.grey),
+                            enabled: true,
+                          border: OutlineInputBorder(
+
+                            borderSide: BorderSide(color: Colors.grey),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10.0),
+                            ),
+                            
+                          ),
+                        ),
+                      ),
+
+                      // const SizedBox(height: 2.0),
 
                       ElevatedButton(
                         onPressed: () async {
@@ -610,6 +628,7 @@ class _MainScreenState extends State<MainScreen> {
                               "passenger_phone":
                                   userModelCurrentInfo!.phone.toString(),
                               "passenger_email": userModelCurrentInfo!.email,
+                              "passenger_count": passengerController.text,
                             }).then((value) {
                               Navigator.push(
                                   // push replacement krna isse
