@@ -266,8 +266,8 @@ class _RideScreenState extends State<RideScreen> {
                                         ),
                                       ],
                                     ),
-                                    const Spacer(),
-                                    GestureDetector(
+                                    data["status"] == "accepted" ? const SizedBox.shrink() : const Spacer(),
+                                    data["status"] == "accepted" ? const SizedBox.shrink() : GestureDetector(
                                         onTap: () {
                                           callNumber(data["driver_phone"]);
                                         },

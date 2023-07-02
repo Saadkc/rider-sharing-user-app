@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -137,29 +139,42 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
                         color: Colors.blue,
                         child: const Text('Submit Feedback'),
                         onPressed: () {
+                        
+
                           FirebaseDatabase firebaseDatabase =
                               FirebaseDatabase.instance;
 
-                          firebaseDatabase
+                          DatabaseReference userRef = firebaseDatabase
                               .ref()
-                              .child('feedback')
+                              .child('requestRides')
                               .child(currentFirebaseUser!.uid)
-                              .push()
-                              .set({
-                            'feedback': controller.text,
-                            'rating': indexList.toString(),
-                          }).then((value) {
-                            userLocationInfo.resetValues();
+                              .child('driver_id');
 
-                            FirebaseDatabase.instance
+                          userRef.once().then((snapshot) {
+                            dynamic driverId = snapshot.snapshot.value;
+                            firebaseDatabase
                                 .ref()
-                                .child(currentFirebaseUser!.uid)
-                                .remove();
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MainScreen()),
-                                (route) => false);
+                                .child('feedback')
+                                .child(driverId)
+                                .push()
+                                .set({
+                              'feedback': controller.text,
+                              'rating': indexList.toString(),
+                            }).then((value) {
+                              userLocationInfo.resetValues();
+
+                              FirebaseDatabase.instance
+                                  .ref()
+                                  .child(currentFirebaseUser!.uid)
+                                  .remove();
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => MainScreen()),
+                                  (route) => false);
+                            });
+                          }).catchError((error) {
+                            print('Failed to retrieve user ID: $error');
                           });
                         }),
                   )

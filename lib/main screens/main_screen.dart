@@ -374,15 +374,18 @@ class _MainScreenState extends State<MainScreen> {
 
                 List<ActiveNearbyAvailableDrivers> drivers = [];
 
+                
+
                 data.forEach((key, value) {
-                  drivers.add(
-                    ActiveNearbyAvailableDrivers(
-                      driverId: key.toString(),
-                      locationLatitude: value['latitude'],
-                      locationLongitude: value['longitude'],
-                    ),
-                  );
-                });
+                    drivers.add(
+                      ActiveNearbyAvailableDrivers(
+                        driverId: key.toString(),
+                        locationLatitude: value['latitude'],
+                        locationLongitude: value['longitude'],
+                      ),
+                    );
+                  });
+                
 
                 userLocationInfo.displayActiveDriversOnUsersMap(drivers);
 
