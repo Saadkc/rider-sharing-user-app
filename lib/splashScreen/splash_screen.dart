@@ -61,7 +61,7 @@ class _MySplashScreenState extends State<MySplashScreen> {
 
 
                 Text(
-                  "    by Muhammad Rashid Shafique & Shaloom",
+                  "    by Muhammad Rashid & Shaloom",
                   style: TextStyle(
                       fontSize: 20,
                       color: Colors.black,

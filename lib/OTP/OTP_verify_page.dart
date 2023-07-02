@@ -1,16 +1,24 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 import 'package:snippet_coder_utils/ProgressHUD.dart';
 import 'package:snippet_coder_utils/hex_color.dart';
-import 'package:user_fyp/authentication/signup_screen.dart';
+
+
+import '../authentication/login_screen.dart';
+import '../authentication/signup_screen.dart';
 
 import 'Api_service.dart';
 import 'config.dart';
+
+
+
 
 class OTPVerifyPage extends StatefulWidget {
   final String? mobileNo;
@@ -130,49 +138,57 @@ class _OTPVerifyPageState extends State<OTPVerifyPage> {
         Center(
           child: FormHelper.submitButton(
             "Continue",
-            () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const SignupScreen()));
-              // if (_enableButton) {
-              //   setState(() {
-              //     isAPIcallProcess = true;
-              //   });
+                () {
+              if (_enableButton) {
+                setState(() {
+                  isAPIcallProcess = true;
+                });
 
-                // APIService.verifyOTP(
-                //     widget.mobileNo!, widget.otpHash!, _otpCode)
-                //     .then((response) {
-                //   setState(() {
-                //     isAPIcallProcess = false;
-                //   });
+                APIService.verifyOTP(
+                    widget.mobileNo!, widget.otpHash!, _otpCode)
+                    .then((response) {
+                  setState(() {
+                    isAPIcallProcess = false;
+                  });
 
-                //   if (response.data != null) {
-                //REDIRECT TO HOME SCREEN
-                // FormHelper.showSimpleAlertDialog(
-                //   context,
-                //   Config.appName,
-                //   "OTP Verified Successfully",
-                //   "Ok",
-                //   () {
-                    // Navigator.of(context).pop();
-                    // Navigator.of(context).pushNamedAndRemoveUntil(
-                    //   "/register",
-                    //   arguments: {'mobileNo': 12},
-                    //   (route) => false,
-                    // );
-                  // },
-                // );
-                //   } else {
-                //     FormHelper.showSimpleAlertDialog(
-                //       context,
-                //       Config.appName,
-                //       response.message,
-                //       "OK",
-                //           () {
-                //         Navigator.pop(context);
-                //       },
-                //     );
-                //   }
-                // });
-              // }
+                  if (response.data != null) {
+                    //REDIRECT TO HOME SCREEN
+                    FormHelper.showSimpleAlertDialog(
+                      context,
+                      Config.appName,
+                      "OTP Verified Successfully",
+                      "Ok",
+                          () {
+                        Navigator.of(context).pop();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+
+                          MaterialPageRoute(
+                              builder: (context) => SignupScreen(mobileNo: widget.mobileNo)
+                          ),
+                              (route) => false,
+                        );
+
+                        // Navigator.of(context).pushNamedAndRemoveUntil(
+                        //   "/MySplashScreen",
+                        //   arguments: {'mobileNo': widget.mobileNo},
+                        //
+                        // );
+                      },
+                    );
+                  } else {
+                    FormHelper.showSimpleAlertDialog(
+                      context,
+                      Config.appName,
+                      response.message,
+                      "OK",
+                          () {
+                        Navigator.pop(context);
+                      },
+                    );
+                  }
+                });
+              }
             },
             borderColor: Colors.yellow.shade900,
             btnColor: Colors.yellow.shade900,
@@ -186,28 +202,31 @@ class _OTPVerifyPageState extends State<OTPVerifyPage> {
         Center(
           child: RichText(
               text: TextSpan(
-            children: <TextSpan>[
-              TextSpan(
-                text: "Want to Update Number ",
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-              TextSpan(
-                text: "Go back",
-                style: TextStyle(
-                  color: Colors.yellow.shade900,
-                ),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      "/otplogin",
-                      (route) => false,
-                    );
-                  },
-              )
-            ],
-          )),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: "Want to Update Number ",
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                  TextSpan(
+                    text: "Go back",
+                    style: TextStyle(
+                      color: Colors.yellow.shade900,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginScreen()
+                          ),
+                              (route) => false,
+                        );
+                      },
+                  )
+                ],
+              )),
         ),
       ],
     );

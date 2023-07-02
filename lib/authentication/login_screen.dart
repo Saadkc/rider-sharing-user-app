@@ -182,13 +182,13 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             TextButton(
-              child: const Text("Already have an Account? Signup Here"),
+              child: const Text("Don't have an Account? Signup Here"),
               onPressed: () {
                 // Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginOTPPage()));
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SignupScreen()));
+                        builder: (context) => const LoginOTPPage()));
               },
             ),
           ],

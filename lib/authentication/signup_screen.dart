@@ -13,7 +13,9 @@ import '../widgets/progress_dialog.dart';
 
 
 class SignupScreen extends StatefulWidget {
-  const SignupScreen({Key? key}) : super(key: key);
+  final String? mobileNo;
+  const SignupScreen({this.mobileNo});
+  //const SignupScreen({Key? key}) : super(key: key);
 
   @override
   State<SignupScreen> createState() => _SignupScreenState();
@@ -51,13 +53,16 @@ class _SignupScreenState extends State<SignupScreen> {
 
       // for realtime database
       if(firebaseUser!= null)
+      
         {
+          String phoneNumber = "0" + widget.mobileNo!;
           Map usersMap =
               {
+              
                 "id": firebaseUser.uid,
                 "name": nameTextEditingController.text.trim(),
                 "email": emailTextEditingController.text.trim(),
-                "phone": phoneTextEditingController.text.trim(),
+                "phone": phoneNumber,
               };
           DatabaseReference reference = FirebaseDatabase.instance.ref().child("users");
           reference.child(firebaseUser.uid).set(usersMap);
@@ -87,10 +92,10 @@ class _SignupScreenState extends State<SignupScreen> {
         {
           Fluttertoast.showToast(msg: "Email address is not valid. ");
         }
-      else if (phoneTextEditingController.text.isEmpty)
-      {
-        Fluttertoast.showToast(msg: "Phone Number is Required ");
-      }
+      // else if (phoneTextEditingController.text.isEmpty)
+      // {
+      //   Fluttertoast.showToast(msg: "Phone Number is Required ");
+      // }
       else if (passwordTextEditingController.text.length <6)
       {
         Fluttertoast.showToast(msg: "Password must be atleast 6 characters ");
@@ -180,11 +185,12 @@ class _SignupScreenState extends State<SignupScreen> {
               TextField(
                 controller: phoneTextEditingController,
                 keyboardType: TextInputType.phone,
+                enabled: false,
                 style: TextStyle(
                   color: Colors.black,
                 ),
                 decoration: InputDecoration(
-                  labelText: "Phone Number",
+                  labelText: widget.mobileNo,
                   hintText: "Phone Number",
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.black),
