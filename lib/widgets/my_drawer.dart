@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:user_fyp/global/global.dart';
+import 'package:user_fyp/rider%20history/ride_history_screen.dart';
 import 'package:user_fyp/splashScreen/splash_screen.dart';
 
-
+import '../profile_Screen/profile_screen.dart';
 
 class MyDrawer extends StatefulWidget {
   String? name;
@@ -11,8 +12,6 @@ class MyDrawer extends StatefulWidget {
   @override
   _MyDrawerState createState() => _MyDrawerState();
 }
-
-
 
 class _MyDrawerState extends State<MyDrawer> {
   @override
@@ -25,15 +24,17 @@ class _MyDrawerState extends State<MyDrawer> {
             height: 165,
             color: Colors.grey,
             child: DrawerHeader(
-              decoration: const BoxDecoration(color: Colors.black),
+                decoration: const BoxDecoration(color: Colors.black),
                 child: Row(
                   children: [
                     const Icon(
-                        Icons.person,
+                      Icons.person,
                       size: 80,
                       color: Colors.grey,
                     ),
-                    const SizedBox(width: 16,),
+                    const SizedBox(
+                      width: 16,
+                    ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -47,7 +48,9 @@ class _MyDrawerState extends State<MyDrawer> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 10,),
+                        const SizedBox(
+                          height: 10,
+                        ),
                         Text(
                           widget.email.toString(),
                           style: const TextStyle(
@@ -59,76 +62,61 @@ class _MyDrawerState extends State<MyDrawer> {
                       ],
                     )
                   ],
-                )
-            ),
+                )),
           ),
-          const SizedBox(height: 12.0,),
+          const SizedBox(
+            height: 12.0,
+          ),
           //drawer body
           GestureDetector(
-            onTap: ()
-            {
-
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const RideHistoryScreen()));
             },
             child: const ListTile(
-              leading: Icon(Icons.history, color: Colors.white),
-              title: Text
-                (
-                "History",
-                style: TextStyle(
-                  color: Colors.white54
-                ),
-              )
-            ),
+                leading: Icon(Icons.history, color: Colors.white),
+                title: Text(
+                  "History",
+                  style: TextStyle(color: Colors.white54),
+                )),
           ),
           GestureDetector(
-            onTap: ()
-            {
-
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ProfileScreen()));
             },
             child: const ListTile(
                 leading: Icon(Icons.person, color: Colors.white),
-                title: Text
-                  (
+                title: Text(
                   "Visit Profile",
-                  style: TextStyle(
-                      color: Colors.white54
-                  ),
-                )
-            ),
+                  style: TextStyle(color: Colors.white54),
+                )),
           ),
           GestureDetector(
-            onTap: ()
-            {
-
-            },
+            onTap: () {},
             child: const ListTile(
                 leading: Icon(Icons.info, color: Colors.white),
-                title: Text
-                  (
+                title: Text(
                   "About",
-                  style: TextStyle(
-                      color: Colors.white54
-                  ),
-                )
-            ),
+                  style: TextStyle(color: Colors.white54),
+                )),
           ),
           GestureDetector(
-            onTap: ()
-            {
+            onTap: () {
               fAuth.signOut();
-              Navigator.push(context, MaterialPageRoute(builder:(c) => const MySplashScreen()));
-
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (c) => const MySplashScreen()));
             },
             child: const ListTile(
                 leading: Icon(Icons.logout, color: Colors.white),
-                title: Text
-                  (
+                title: Text(
                   "Signout",
-                  style: TextStyle(
-                      color: Colors.white54
-                  ),
-                )
-            ),
+                  style: TextStyle(color: Colors.white54),
+                )),
           ),
         ],
       ),
