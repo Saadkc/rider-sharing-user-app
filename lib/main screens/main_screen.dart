@@ -589,10 +589,11 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                           ),
                           SizedBox(
+                              
                             width: MediaQuery.of(context).size.width / 2,
                             child: DropdownButton(
                               iconSize: 26,
-                              dropdownColor: Colors.white,
+                              dropdownColor: Colors.black,
                               hint: const Text(
                                 "Choose Car Type",
                                 style: TextStyle(
@@ -611,7 +612,9 @@ class _MainScreenState extends State<MainScreen> {
                                   value: car,
                                   child: Text(
                                     car,
-                                    style: const TextStyle(color: Colors.black),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 );
                               }).toList(),
