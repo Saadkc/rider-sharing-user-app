@@ -39,6 +39,9 @@ class _MainScreenState extends State<MainScreen> {
   CameraPosition? _initialPosition;
   final ref = FirebaseDatabase.instance.ref('drivers');
 
+  List<String> carTypeList = ["CAR AC", "Car non AC", "bike"];
+  String? selectedCarType;
+
   final user = FirebaseAuth.instance.currentUser;
   // static const CameraPosition _kGooglePlex = CameraPosition(
   //   target: LatLng(37.42796133580664, -122.085749655962),
@@ -46,7 +49,7 @@ class _MainScreenState extends State<MainScreen> {
   // );
 
   GlobalKey<ScaffoldState> sKey = GlobalKey<ScaffoldState>();
-  double searchLocationContainerHeight = 250;
+  double searchLocationContainerHeight = 280;
 
   Position? userCurrentPosition;
   var geoLocator = Geolocator();
@@ -369,8 +372,6 @@ class _MainScreenState extends State<MainScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                // Parse the updated marker data from the snapshot
-
                 Map data = snapshot.data!.snapshot.value;
 
                 List<ActiveNearbyAvailableDrivers> drivers = [];
@@ -386,13 +387,6 @@ class _MainScreenState extends State<MainScreen> {
                 });
 
                 userLocationInfo.displayActiveDriversOnUsersMap(drivers);
-
-                // WidgetsBinding.instance.addPostFrameCallback((_) {
-                //   displayActiveDriversOnUsersMap(drivers);
-
-                // });
-
-                // Rest of the code...
 
                 return _initialPosition == null
                     ? const Center(
@@ -566,36 +560,65 @@ class _MainScreenState extends State<MainScreen> {
                           ],
                         ),
                       ),
-
                       const SizedBox(height: 10.0),
-
                       const Divider(
                         height: 1,
                         thickness: 1,
                         color: Colors.grey,
                       ),
-
                       const SizedBox(height: 8.0),
-
-                      TextFormField(
-                        controller: passengerController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Passengers',
-                            labelStyle: TextStyle(color: Colors.grey),
-                            enabled: true,
-                          border: OutlineInputBorder(
-
-                            borderSide: BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(10.0),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width / 3,
+                            child: TextFormField(
+                              controller: passengerController,
+                              keyboardType: TextInputType.number,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: const InputDecoration(
+                                labelText: 'Passengers',
+                                labelStyle: TextStyle(color: Colors.grey),
+                                enabled: true,
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10.0),
+                                  ),
+                                ),
+                              ),
                             ),
-                            
                           ),
-                        ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width / 2,
+                            child: DropdownButton(
+                              iconSize: 26,
+                              dropdownColor: Colors.white,
+                              hint: const Text(
+                                "Choose Car Type",
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              value: selectedCarType,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedCarType = newValue.toString();
+                                });
+                              },
+                              items: carTypeList.map((car) {
+                                return DropdownMenuItem(
+                                  value: car,
+                                  child: Text(
+                                    car,
+                                    style: const TextStyle(color: Colors.black),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ],
                       ),
-
-                      // const SizedBox(height: 2.0),
 
                       ElevatedButton(
                         onPressed: () async {
@@ -629,9 +652,9 @@ class _MainScreenState extends State<MainScreen> {
                                   userModelCurrentInfo!.phone.toString(),
                               "passenger_email": userModelCurrentInfo!.email,
                               "passenger_count": passengerController.text,
+                              "car_type": selectedCarType,
                             }).then((value) {
                               Navigator.push(
-                                  // push replacement krna isse
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>

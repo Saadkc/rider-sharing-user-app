@@ -56,11 +56,11 @@ class _MySplashScreenState extends State<MySplashScreen> {
 
                 Image.asset("assets/images/logo1.jpg"),
 
-                SizedBox(height: 10,),
+                const SizedBox(height: 10,),
 
 
 
-                Text(
+                const Text(
                   "    by Muhammad Rashid & Shaloom",
                   style: TextStyle(
                       fontSize: 20,
