@@ -32,9 +32,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
-              } else if (!snapshot.hasData) {
+              } else if (snapshot.data!.snapshot.value == null) {
                 return const Center(
-                    child: Text('No Schdule available right now'));
+                    child: Text('No User Data Found'));
               }
 
               Map data = snapshot.data!.snapshot.value;
