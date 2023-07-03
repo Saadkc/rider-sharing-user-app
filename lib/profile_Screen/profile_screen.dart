@@ -41,7 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               nameController.text = data['name'];
               emailController.text = data['email'];
-              phoneController.text = data['phone'];
+              phoneController.text = data['phone'].toString();
 
               return Padding(
                 padding: const EdgeInsets.all(16.0),

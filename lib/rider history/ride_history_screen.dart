@@ -12,6 +12,7 @@ class RideHistoryScreen extends StatefulWidget {
 class _RideHistoryScreenState extends State<RideHistoryScreen> {
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ride History'),
@@ -34,9 +35,9 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
-            } else if (!snapshot.hasData) {
+            } else if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
               return const Center(
-                  child: Text('No Schdule available right now'));
+                  child: Text('No Ride History available yet'));
             }
 
             Map data = snapshot.data!.snapshot.value;

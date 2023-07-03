@@ -62,7 +62,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 "id": firebaseUser.uid,
                 "name": nameTextEditingController.text.trim(),
                 "email": emailTextEditingController.text.trim(),
-                "phoneNumber": phoneNumber,
+                "phone": phoneNumber,
               };
           DatabaseReference reference = FirebaseDatabase.instance.ref().child("users");
           reference.child(firebaseUser.uid).set(usersMap);
