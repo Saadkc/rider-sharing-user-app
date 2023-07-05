@@ -3,6 +3,7 @@ import 'package:user_fyp/global/global.dart';
 import 'package:user_fyp/rider%20history/ride_history_screen.dart';
 import 'package:user_fyp/splashScreen/splash_screen.dart';
 
+import '../main screens/schedule_screen.dart';
 import '../profile_Screen/profile_screen.dart';
 
 class MyDrawer extends StatefulWidget {
@@ -79,6 +80,23 @@ class _MyDrawerState extends State<MyDrawer> {
                 leading: Icon(Icons.history, color: Colors.white),
                 title: Text(
                   "History",
+                  style: TextStyle(color: Colors.white54),
+                )),
+          ),
+          const SizedBox(
+            height: 12.0,
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ScheduleScreen()));
+            },
+            child: const ListTile(
+                leading: Icon(Icons.history, color: Colors.white),
+                title: Text(
+                  "Schedule Rides",
                   style: TextStyle(color: Colors.white54),
                 )),
           ),

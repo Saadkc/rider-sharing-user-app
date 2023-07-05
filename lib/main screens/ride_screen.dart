@@ -271,35 +271,15 @@ class _RideScreenState extends State<RideScreen> {
                                         : const Spacer(),
                                     data["status"] == "accepted"
                                         ? const SizedBox.shrink()
-                                        : Row(
-                                            children: [
-                                              ElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                 ScheduleScreen(driverId: data['driver_id'],)));
-                                                  },
-                                                  child:
-                                                      const Text("Schedule")),
-                                              const SizedBox(
-                                                width: 10,
-                                              ),
-                                              GestureDetector(
-                                                  onTap: () {
-                                                    callNumber(
-                                                        data["driver_phone"]);
-                                                  },
-                                                  child: const Icon(Icons.call,
-                                                      color: Colors.green)),
-                                            ],
-                                          )
+                                        : GestureDetector(
+                                            onTap: () {
+                                              callNumber(data["driver_phone"]);
+                                            },
+                                            child: const Icon(Icons.call,
+                                                color: Colors.green)),
                                   ],
                                 ),
-
                                 const SizedBox(height: 20.0),
-
                                 Container(
                                   height: 100,
                                   margin: const EdgeInsets.symmetric(
