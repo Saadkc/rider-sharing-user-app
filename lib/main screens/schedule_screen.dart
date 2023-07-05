@@ -422,6 +422,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                             currentFirebaseUser!
                                                                 .email,
                                                       }).then((value) {
+                                                        
                                                         FirebaseDatabase
                                                             .instance
                                                             .ref()
@@ -462,11 +463,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                               'fares'],
                                                           "selectedSeats":
                                                               selectedSeats,
-                                                          "drive_id": data
+                                                          "driver_id": data
                                                                   .values
                                                                   .elementAt(
                                                                       index)[
-                                                              'drive_id'],
+                                                              'driver_id'],
                                                           "driver_name": data
                                                                   .values
                                                                   .elementAt(
@@ -480,10 +481,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                           "passenger_id":
                                                               currentFirebaseUser!
                                                                   .uid,
-                                                          "passenger_name": userModelCurrentInfo!
-                                                              .name,
-                                                          "passenger_phone": userModelCurrentInfo!
-                                                              .phone,
+                                                          "passenger_name":
+                                                              userModelCurrentInfo!
+                                                                  .name,
+                                                          "passenger_phone":
+                                                              userModelCurrentInfo!
+                                                                  .phone,
                                                         }).then((value) =>
                                                                 Navigator.pop(
                                                                     context));
