@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:user_fyp/global/global.dart';
+import 'package:user_fyp/main%20screens/booking.dart';
 import 'package:user_fyp/rider%20history/ride_history_screen.dart';
 import 'package:user_fyp/splashScreen/splash_screen.dart';
 
@@ -97,6 +98,23 @@ class _MyDrawerState extends State<MyDrawer> {
                 leading: Icon(Icons.history, color: Colors.white),
                 title: Text(
                   "Schedule Rides",
+                  style: TextStyle(color: Colors.white54),
+                )),
+          ),
+           const SizedBox(
+            height: 12.0,
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const BookingScreen()));
+            },
+            child: const ListTile(
+                leading: Icon(Icons.history, color: Colors.white),
+                title: Text(
+                  "Booked Rides",
                   style: TextStyle(color: Colors.white54),
                 )),
           ),

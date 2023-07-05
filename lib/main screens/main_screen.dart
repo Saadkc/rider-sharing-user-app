@@ -589,7 +589,6 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                           ),
                           SizedBox(
-                              
                             width: MediaQuery.of(context).size.width / 2,
                             child: DropdownButton(
                               iconSize: 26,
@@ -626,6 +625,32 @@ class _MainScreenState extends State<MainScreen> {
                       ElevatedButton(
                         onPressed: () async {
                           if (userLocationInfo.userDropOffLocation != null) {
+                            if (passengerController.text.isEmpty) {
+                              Fluttertoast.showToast(
+                                  msg: "Please enter number of passengers");
+                              return;
+                            } else if (selectedCarType == null) {
+                              Fluttertoast.showToast(
+                                  msg: "Please select a ride type");
+                              return;
+                            } else if (selectedCarType == "bike" &&
+                                int.parse(passengerController.text) > 1) {
+                              Fluttertoast.showToast(
+                                  msg: "Bike can only carry one passenger");
+                              return;
+                            } else if (selectedCarType == "CAR AC" &&
+                                int.parse(passengerController.text) > 4) {
+                              Fluttertoast.showToast(
+                                  msg: "Car AC can only carry 4 passengers");
+                              return;
+                            } else if (selectedCarType == "Car non AC" &&
+                                int.parse(passengerController.text) > 4) {
+                              Fluttertoast.showToast(
+                                  msg:
+                                      "Car non AC can only carry 4 passengers");
+                              return;
+                            }
+
                             showDialog(
                               context: context,
                               builder: (BuildContext context) =>

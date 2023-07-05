@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:user_fyp/global/global.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -39,17 +40,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             return ListView.builder(
                 itemCount: data.length,
                 itemBuilder: (context, index) {
-                  fromLocationController.text =
-                      data.values.elementAt(index)['fromLocation'];
-                  toLocationController.text =
-                      data.values.elementAt(index)['toLocation'];
                   isDaily = data.values.elementAt(index)['isDaily'];
                   faresController.text =
                       data.values.elementAt(index)['fares'].toString();
                   return Container(
                     margin: const EdgeInsets.all(20),
                     padding: const EdgeInsets.all(20),
-                    height: 540,
+                    height: 600,
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(20),
@@ -60,8 +57,29 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                         const SizedBox(
                           height: 20,
                         ),
+                        Text(
+                          "Driver Name: ${data.values.elementAt(index)['driver_name']}",
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        Text(
+                          "Driver Phone: ${data.values.elementAt(index)['driver_phone']}",
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
                         TextFormField(
-                          controller: fromLocationController,
+                          initialValue:
+                              data.values.elementAt(index)['fromLocation'],
+                          // controller: fromLocationController,
                           keyboardType: TextInputType.text,
                           style: const TextStyle(
                             color: Colors.black,
@@ -83,7 +101,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           ),
                         ),
                         TextFormField(
-                          controller: toLocationController,
+                          initialValue:
+                              data.values.elementAt(index)['toLocation'],
+                          // controller: toLocationController,
                           keyboardType: TextInputType.text,
                           style: const TextStyle(
                             color: Colors.black,
@@ -392,10 +412,82 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                                                 int.parse(
                                                                     selectedSeats))
                                                             .toString(),
-                                                      }).then((value) =>
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop());
+                                                        "passenger_id":
+                                                            currentFirebaseUser!
+                                                                .uid,
+                                                        "passenger_name":
+                                                            currentFirebaseUser!
+                                                                .displayName,
+                                                        "passenger_email":
+                                                            currentFirebaseUser!
+                                                                .email,
+                                                      }).then((value) {
+                                                        FirebaseDatabase
+                                                            .instance
+                                                            .ref()
+                                                            .child('booking')
+                                                            .child(
+                                                                currentFirebaseUser!
+                                                                    .uid)
+                                                            .set({
+                                                          "fromLocation": data
+                                                                  .values
+                                                                  .elementAt(
+                                                                      index)[
+                                                              'fromLocation'],
+                                                          "toLocation": data
+                                                                  .values
+                                                                  .elementAt(
+                                                                      index)[
+                                                              'toLocation'],
+                                                          "seats": data.values
+                                                                  .elementAt(
+                                                                      index)[
+                                                              'seats'],
+                                                          "isDaily": data.values
+                                                                  .elementAt(
+                                                                      index)[
+                                                              'isDaily'],
+                                                          "date": data.values
+                                                                  .elementAt(
+                                                                      index)[
+                                                              'date'],
+                                                          "time": data.values
+                                                                  .elementAt(
+                                                                      index)[
+                                                              'time'],
+                                                          "fares": data.values
+                                                                  .elementAt(
+                                                                      index)[
+                                                              'fares'],
+                                                          "selectedSeats":
+                                                              selectedSeats,
+                                                          "drive_id": data
+                                                                  .values
+                                                                  .elementAt(
+                                                                      index)[
+                                                              'drive_id'],
+                                                          "driver_name": data
+                                                                  .values
+                                                                  .elementAt(
+                                                                      index)[
+                                                              'driver_name'],
+                                                          "driver_phone": data
+                                                                  .values
+                                                                  .elementAt(
+                                                                      index)[
+                                                              'driver_phone'],
+                                                          "passenger_id":
+                                                              currentFirebaseUser!
+                                                                  .uid,
+                                                          "passenger_name": userModelCurrentInfo!
+                                                              .name,
+                                                          "passenger_phone": userModelCurrentInfo!
+                                                              .phone,
+                                                        }).then((value) =>
+                                                                Navigator.pop(
+                                                                    context));
+                                                      });
                                                       // Add code here to handle form submission
                                                     },
                                                     child: const Text('Submit'),
